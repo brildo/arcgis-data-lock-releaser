@@ -35,7 +35,7 @@
 
 ### 🖼️ 软件界面展示
 
-![ArcGIS Pro 数据锁解除工具 UI](docs/ui-screenshot.png)
+![ArcGIS Pro 数据锁解除工具 UI](UI.jpg)
 
 *工具 GUI 显示被占用的数据集列表、文件句柄数量、锁文件状态等详细信息*
 
@@ -99,9 +99,8 @@ flowchart TD
 ├── test_lock_simulation.py     # 全流程自动化仿真测试脚本 (GDB & Shapefile)
 ├── run.bat                     # 通用启动脚本 (自动检测 Python 环境并以管理员提权)
 ├── 启动工具.vbs                # 静默一键启动器 (无 CMD 黑色控制台闪烁)
+├── UI.jpg                      # 工具界面截图
 ├── requirements.txt            # Python 依赖清单
-├── docs/                       # 文档与图片文件夹
-│   └── ui-screenshot.png       # 工具界面截图
 ├── LICENSE                     # MIT 开源许可证
 └── README.md                   # 仓库说明文档
 ```
@@ -173,7 +172,7 @@ python test_lock_simulation.py
 
 ## 📄 开源许可证
 
-本项目遵循 [MIT License](LICENSE) 开源协议。欢迎提交 Issue 或 Pull Request 共建完善！
+��项目遵循 [MIT License](LICENSE) 开源协议。欢迎提交 Issue 或 Pull Request 共建完善！
 
 ---
 
@@ -208,7 +207,7 @@ In daily GIS production and data processing workflows, **ArcGIS Pro** typically 
 
 ### 🖼️ Software Interface Preview
 
-![ArcGIS Pro Data Lock Releaser UI](docs/ui-screenshot.png)
+![ArcGIS Pro Data Lock Releaser UI](UI.jpg)
 
 *Tool GUI displays list of occupied datasets, file handle counts, lock file status, and other detailed information*
 
@@ -272,9 +271,8 @@ Using Windows Native Kernel Interfaces:
 ├── test_lock_simulation.py     # End-to-end automated simulation test script (GDB & Shapefile)
 ├── run.bat                     # Universal startup script (auto-detects Python & elevates to admin)
 ├── 启动工具.vbs                # Silent one-click launcher (no CMD black console flashing)
+├── UI.jpg                      # Tool interface screenshot
 ├── requirements.txt            # Python dependency list
-├── docs/                       # Documentation and images folder
-│   └── ui-screenshot.png       # Tool interface screenshot
 ├── LICENSE                     # MIT Open Source License
 └── README.md                   # Repository documentation
 ```
