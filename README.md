@@ -1,4 +1,12 @@
-# ArcGIS Pro 地理数据独占锁解除工具 (ArcGIS Data Lock Releaser)
+# ArcGIS Pro 地理数据独占锁解除工具 | ArcGIS Data Lock Releaser
+
+**[中文](#中文) | [English](#english)**
+
+---
+
+<a id="中文"></a>
+
+# 中文文档
 
 <p align="center">
   <img src="https://img.shields.io/badge/Platform-Windows-blue?logo=windows" alt="Platform">
@@ -15,21 +23,27 @@
 
 ## 📖 项目背景与解决的痛点
 
-在日常 GIS 生产与数据处理工作中，**ArcGIS Pro** 对地理数据库（File Geodatabase，`.gdb`）和 Shapefile（`.shp`）通常采用**独占锁（Exclusive Lock）**或强句柄缓存机制：
+在日常 GIS 生产与数据处理工作中，**ArcGIS Pro** 对地理数据库（File Geodatabase，`.gdb`）和 Shapefile（`.shp`）通常采用**独占锁（Exclusive Lock）**或强句柄缓存机制。
 
 - **常见痛点场景**：
   1. 用户在 ArcGIS Pro 中查看或编辑完数据后，已经在【内容】列表中**移除了图层**，甚至**关闭了地图或工程视图**；
   2. 但底层核心进程（`ArcGISPro.exe`）依然长期持有这些文件的 **Windows 底层操作系统文件句柄** 与 **`.lock` 锁文件**；
-  3. 当第三方软件（如 QGIS、FME、PostgreSQL/PostGIS 导入工具、Python `geopandas` / `arcpy` 外部脚本）尝试以读写模式覆盖、重命名或更新该数据集时，必然遭遇 `PermissionError` 或 `Sharing Violation` 独占冲突；
+  3. 当第三方软件（如 QGIS、FME、PostgreSQL/PostGIS 导入工具、Python `geopandas` / `arcpy` 外部脚本）尝试以读写模式覆盖、重命名或更新该数据集时，必然遭遇权限错误；
   4. 此前的唯一解决办法是**彻底退出并关闭庞大的 ArcGIS Pro 进程**，严重打断多任务协同流。
 
-**本工具专为解决该痛点而设计**：无需重启或关闭 ArcGIS Pro，即可精准探测哪些 GDB 或 Shapefile 正处于被锁状态，并在保证 Pro 进程平稳运行的前提下一键跨进程安全释放独占锁，使外部软件立即可读可写！
+**本工具专为解决该痛点而设计**：无需重启或关闭 ArcGIS Pro，即可精准探测哪些 GDB 或 Shapefile 正处于被锁状态，并在保证 Pro 进程平稳运行的前提下安全释放底层文件句柄。
+
+### 🖼️ 软件界面展示
+
+![ArcGIS Pro 数据锁解除工具 UI](docs/ui-screenshot.png)
+
+*工具 GUI 显示被占用的数据集列表、文件句柄数量、锁文件状态等详细信息*
 
 ---
 
 ## ✨ 核心特性
 
-- **非侵入式释放**：绝不暴力结束（Kill）ArcGIS Pro 主进程，仅针对目标数据集相关的底层文件句柄执行安全闭合，不影响 Pro 内正在进行的其他工程与工作流。
+- **非侵入式释放**：绝不暴力结束（Kill）ArcGIS Pro 主进程，仅针对目标数据集相关的底层文件句柄执行安全闭合，不影响 Pro 内正在进行的其他工程操作。
 - **双主流地理格式支持**：
   - **File Geodatabase (`.gdb`)**：识别整个 GDB 文件夹结构与各子表文件句柄；
   - **Shapefile (`.shp`)**：智能反向聚合 `.shp`、`.dbf`、`.shx` 实体句柄及同级目录下的伴生锁文件（如 `*.shp.*.lock`）。
@@ -86,6 +100,8 @@ flowchart TD
 ├── run.bat                     # 通用启动脚本 (自动检测 Python 环境并以管理员提权)
 ├── 启动工具.vbs                # 静默一键启动器 (无 CMD 黑色控制台闪烁)
 ├── requirements.txt            # Python 依赖清单
+├── docs/                       # 文档与图片文件夹
+│   └── ui-screenshot.png       # 工具界面截图
 ├── LICENSE                     # MIT 开源许可证
 └── README.md                   # 仓库说明文档
 ```
@@ -158,3 +174,191 @@ python test_lock_simulation.py
 ## 📄 开源许可证
 
 本项目遵循 [MIT License](LICENSE) 开源协议。欢迎提交 Issue 或 Pull Request 共建完善！
+
+---
+
+<a id="english"></a>
+
+# English Documentation
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Platform-Windows-blue?logo=windows" alt="Platform">
+  <img src="https://img.shields.io/badge/Python-3.8%2B-brightgreen?logo=python" alt="Python">
+  <img src="https://img.shields.io/badge/ArcGIS%20Pro-2.x%20%2F%203.x-orange" alt="ArcGIS Pro">
+  <img src="https://img.shields.io/badge/Data%20Types-File%20GDB%20%7C%20Shapefile-blueviolet" alt="Data Types">
+  <a href="https://github.com/brildo/arcgis-data-lock-releaser/releases/latest">
+    <img src="https://img.shields.io/badge/Download-Release%20v1.1.0-brightgreen?logo=windows" alt="Download">
+  </a>
+  <img src="https://img.shields.io/badge/License-MIT-green" alt="License">
+</p>
+
+---
+
+## 📖 Project Background & Pain Points Addressed
+
+In daily GIS production and data processing workflows, **ArcGIS Pro** typically maintains **Exclusive Locks** or strong handle caching mechanisms on geographic databases (File Geodatabase, `.gdb`) and Shapefiles (`.shp`).
+
+- **Common Frustrating Scenarios**:
+  1. After viewing or editing data in ArcGIS Pro, users have already **removed the layer** from the Contents panel and even **closed the map or project view**;
+  2. However, the underlying core process (`ArcGISPro.exe`) continues to hold **Windows OS file handles** and **`.lock` lock files** on these datasets;
+  3. When third-party software (such as QGIS, FME, PostgreSQL/PostGIS import tools, or Python `geopandas`/`arcpy` external scripts) attempts to overwrite, rename, or update the dataset in read-write mode, it inevitably encounters permission errors;
+  4. Previously, the only solution was to **completely exit and close the heavy ArcGIS Pro process**, severely disrupting multi-tasking workflows.
+
+**This tool is specifically designed to solve this pain point**: Release locked file handles without restarting or closing ArcGIS Pro, while ensuring the Pro process continues running smoothly.
+
+### 🖼️ Software Interface Preview
+
+![ArcGIS Pro Data Lock Releaser UI](docs/ui-screenshot.png)
+
+*Tool GUI displays list of occupied datasets, file handle counts, lock file status, and other detailed information*
+
+---
+
+## ✨ Core Features
+
+- **Non-invasive Release**: Never forcefully kills the ArcGIS Pro main process. Only safely closes file handles related to the target dataset, without affecting other operations in Pro.
+- **Dual Mainstream GIS Format Support**:
+  - **File Geodatabase (`.gdb`)**: Identifies the entire GDB folder structure and all associated file handles;
+  - **Shapefile (`.shp`)**: Intelligently aggregates `.shp`, `.dbf`, `.shx` file handles and companion lock files in the same directory (e.g., `*.shp.*.lock`).
+- **Dual-Level Complete Release**:
+  1. OS-level: Safely closes Windows kernel-level open file handles;
+  2. File system-level: Automatically cleans up orphaned `.lock` files remaining in directories.
+- **Real-time Read-Write Exclusivity Verification**: Built-in exclusive write test after release to immediately confirm external programs have full write access.
+- **Modern Minimalist GUI**:
+  - Developed with Python native Tkinter, card-style interface, intuitive and clear;
+  - Supports auto-scanning (automatically detects occupancy status every 5 seconds);
+  - Supports single selection release, batch multi-select release, and one-click release all;
+  - Supports one-click location in Windows File Explorer.
+- **Lightweight & Dependency-Free**: Built with pure Python + Windows Native API (ctypes), no complex compilation environment needed, just double-click to run.
+
+---
+
+## 🔬 Technical Implementation Details
+
+ArcGIS Pro's data occupancy consists of **two mechanisms**:
+1. **`.lock` Status Marker Files**: Used internally by GIS software to identify read-write states (e.g., `*.sr.lock` for shared read locks, `*.ed.lock` for edit locks);
+2. **Windows Kernel File Handles (OS File Handle)**: The fundamental reason external write and delete operations are blocked.
+
+```mermaid
+flowchart TD
+    A[Start Detection] --> B[Enumerate ArcGISPro.exe and child processes]
+    B --> C[NtQuerySystemInformation to enumerate system handles]
+    C --> D[DuplicateHandle + GetFinalPathNameByHandleW to resolve paths]
+    D --> E{Path Type Judgment}
+    E -->|Contains .gdb directory| F[Aggregate into File GDB record]
+    E -->|Contains .shp/.dbf or *.shp.*.lock| G[Aggregate into Shapefile record]
+    F --> H[Present occupancy status in GUI list]
+    G --> H
+    H -->|User clicks Release| I[DuplicateHandle + DUPLICATE_CLOSE_SOURCE]
+    I --> J[Kernel safely closes remote handle]
+    J --> K[Clean up orphaned *.lock files on disk]
+    K --> L[Execute exclusivity verification and provide feedback]
+```
+
+Using Windows Native Kernel Interfaces:
+- `ntdll.NtQuerySystemInformation(SystemExtendedHandleInformation)`: High-performance enumeration of process handles;
+- `kernel32.DuplicateHandle(..., DUPLICATE_CLOSE_SOURCE)`: Instructs Windows kernel to safely close the specified handle in the target process context;
+- Exclusive access fallback mechanism (`FILE_NAME_OPENED`): Ensures complete path resolution even for files in exclusive occupancy state.
+
+---
+
+## 📁 Repository Structure
+
+```
+.
+├── gdb_lock_resolver.py        # GUI desktop main program (Tkinter)
+├── lock_engine.py              # Lock detection, analysis, aggregation & release core engine
+├── handle_closer.py            # Windows native handle detection & remote closure low-level module (ctypes)
+├── test_lock_simulation.py     # End-to-end automated simulation test script (GDB & Shapefile)
+├── run.bat                     # Universal startup script (auto-detects Python & elevates to admin)
+├── 启动工具.vbs                # Silent one-click launcher (no CMD black console flashing)
+├── requirements.txt            # Python dependency list
+├── docs/                       # Documentation and images folder
+│   └── ui-screenshot.png       # Tool interface screenshot
+├── LICENSE                     # MIT Open Source License
+└── README.md                   # Repository documentation
+```
+
+---
+
+## 🚀 Quick Start
+
+### System Requirements
+- **Operating System**: Windows 10 / 11 / Windows Server (x64)
+- **Python**: Python 3.8 or higher (must include Tkinter, included by default in official installers)
+- **Permissions**: Windows Administrator rights (required by Windows OS for cross-process handle operations)
+
+### Running Methods
+
+#### Method 1: Run Packaged Standalone EXE (Simplest, No Python Installation Required)
+- Download the latest **`ArcGIS_Data_Lock_Releaser.exe`** from the [**GitHub Releases page**](https://github.com/brildo/arcgis-data-lock-releaser/releases/latest);
+- Or run **`dist\ArcGIS_Data_Lock_Releaser.exe`** directly in your local source directory;
+- Compiled with **Nuitka** high-performance C compiler, only ~9.6MB in size;
+- Includes UAC admin elevation and native Tkinter interface; completely free of CMD black window flashing; works immediately on any clean Windows environment!
+
+#### Method 2: Double-Click Script Launch (Source Code Mode)
+1. Double-click **`启动工具.vbs`** (silent launch based on Windows native WScript, no black window);
+2. Or double-click **`run.bat`** (auto-checks admin permissions and auto-closes console after launching the main program).
+
+#### Method 3: Command Line Launch (Developer Mode)
+Open PowerShell or CMD as Administrator:
+```powershell
+# Navigate to the project directory
+cd /path/to/arcgis-data-lock-releaser
+
+# Launch with pythonw (or python)
+pythonw gdb_lock_resolver.py
+```
+
+---
+
+## 💡 Usage Steps & Recommendations
+
+1. **Identify Occupancy**: After opening the tool, it automatically detects the `ArcGISPro.exe` process and scans geospatial data it occupies;
+2. **Select Targets**: View dataset paths, data types, occupying process PID, associated handle counts, and lock file counts in the table;
+3. **Safe Release**: Select target row(s) and click **【Release Selected Data Locks】**;
+4. **Verify Results**: After release, click **【Verify Selected Data Read-Write】** to confirm external programs have full non-read-only access.
+
+> [!TIP]
+> **Best Time to Use**:
+> Use this tool after you've removed the layer from ArcGIS Pro, closed the related map, or saved your edits;
+> Avoid forcefully disconnecting handles while ArcGIS Pro is executing long-running geoprocessing tools that are writing to the dataset.
+
+---
+
+## 🧪 Automated Testing & Validation
+
+The project includes a complete simulation test script `test_lock_simulation.py`. Verify end-to-end lock release capabilities without launching ArcGIS Pro:
+
+```powershell
+python test_lock_simulation.py
+```
+
+**Test Flow Includes**:
+- Automatically builds mock File GDB and Shapefile structures;
+- Launches independent subprocess to exclusively lock target data in write mode and create simulated lock files;
+- Verifies external access is blocked (PermissionError thrown);
+- Invokes core engine to locate and release cross-process handles;
+- Verifies lock files are completely cleaned up and external read-write access fully restored;
+- Confirms target process remains alive throughout, no crashes.
+
+---
+
+## 📄 Open Source License
+
+This project is licensed under the [MIT License](LICENSE). We welcome Issues and Pull Requests for collaborative improvement!
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Whether you've found a bug, have a feature request, or want to improve the documentation, please feel free to open an Issue or submit a Pull Request.
+
+## 📞 Support
+
+If you encounter any issues, please open an [Issue](https://github.com/brildo/arcgis-data-lock-releaser/issues) on GitHub and provide:
+- Your Windows version
+- Python version
+- ArcGIS Pro version
+- Detailed description of the problem
+- Relevant error messages or logs
